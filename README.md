@@ -41,10 +41,10 @@ All data is open and free to download.
 
 | Folder in `RAW/` | File(s) | Notes |
 |---|---|---|
-| `kba_stock/` | `kba_fz1_2017.xlsx` … `kba_fz1_2026.xlsx` | FZ 1, one file per year (renamed). From 2020 on, sheet `FZ1.2`; before, sheet `Pkw`. 2017 is only published as PDF and was transferred to Excel. |
+| `kba_stock/` | `kba_fz1_2017.xlsx` … `kba_fz1_2026.xlsx` | FZ 1, one file per year, **renamed to `kba_fz1_<year>.xlsx`**. From 2020 on, sheet `FZ1.2`; before, sheet `Pkw`. 2017 is only published as PDF; the converted Excel file is **included in this repository**. |
 | `income/` | `entgelt-d-0-202012-xlsx.xlsx`, `entgelt-dwolk-0-202512-xlsx.xlsx` | Regional tables, editions Dec 2020 and Dec 2025. Sheet 8.2: place of work; sheet 9.2: place of residence. |
 | `population/` | `12411-01-01-4.csv` | Population by sex, districts, 31 Dec |
-| `charging_points/` | `Ladesaeulenregister_BNetzA_2026-09-01.csv` | Full register, as of 1 Sep 2026 |
+| `charging_points/` | `Ladesaeulenregister_BNetzA_2026-09-01.csv` | Full register, as of 1 Sep 2026. The register is updated continuously, so a newer download gives slightly different charging figures. |
 | `area_boundaries/` | `vg250-ew_12-31.utm32s.shape.ebenen/` | VG250-EW, as of 31 Dec, UTM32s, shapefile by levels (unzipped as downloaded); district layer `VG250_KRS` |
 
 ---
@@ -68,11 +68,12 @@ All data is open and free to download.
 
 ```
 charged-by-income/
-├── RAW/                         # original downloads (not included, see below)
+├── RAW/                         # original downloads (only the 2017 KBA file is included)
 │   ├── area_boundaries/
 │   ├── charging_points/
 │   ├── income/
 │   ├── kba_stock/
+│   │   └── kba_fz1_2017.xlsx    # converted from the KBA PDF
 │   └── population/
 ├── CLEAN/                       # cleaned tables, one per source + final panel
 │   ├── kba_stock.csv
@@ -114,18 +115,25 @@ The notebooks are numbered and run in order: 01–04 read and clean one source e
 
 ## How to reproduce
 
-1. Download the raw files from the sources above into the matching `RAW/` subfolders.
+1. Download the raw files from the sources above into the matching `RAW/` subfolders (see [Raw files used](#raw-files-used)):
+   - **KBA:** rename the yearly files to `kba_fz1_<year>.xlsx` (e.g. `kba_fz1_2026.xlsx`). The 2017 file is already included.
+   - **VG250:** unzip the download as it is into `RAW/area_boundaries/`.
+   - **Charging register:** if you use a newer version than 1 Sep 2026, adjust the file name in notebook 04 if necessary.
 2. Create the environment:
    ```bash
    conda create -n WBS_final_project python=3.14
    conda activate WBS_final_project
-   conda install pandas numpy geopandas openpyxl jupyter
+   conda install -c conda-forge pandas numpy geopandas openpyxl jupyter
    ```
 3. In the first cell of each notebook, set `PROJECT_DIR` to the path of your local project folder.
 4. Run the notebooks in `notebooks/` in numerical order.
 5. Load `OUTPUT/tableau_panel.csv` and `OUTPUT/districts.geojson` into Tableau Public and relate them on `district_id`.
 
-The raw data is not included in this repository because of file size. All files can be downloaded from the sources above.
+Apart from the converted 2017 KBA file, the raw data is not included in this repository because of file size. All other files can be downloaded from the sources above.
+
+**Without the raw data:** The cleaned tables in `CLEAN/` and the results in `OUTPUT/` are included. To follow the analysis or rebuild the dashboards, you can start directly with notebook 06 or with step 5.
+
+**Expected differences:** Source data can be revised after publication, and package versions are not pinned. Results may therefore differ slightly from the figures above. The charging figures are most affected, because the register is updated continuously.
 
 ---
 
